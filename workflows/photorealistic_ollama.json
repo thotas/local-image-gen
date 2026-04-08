@@ -1,0 +1,79 @@
+{
+  "1": {
+    "class_type": "OllamaGenerateAdvance",
+    "inputs": {
+      "prompt": "woman in rain, Tokyo street, night",
+      "system": "You are a photorealistic image prompt expert. Expand the user's short description into a detailed, cinematic, photorealistic Stable Diffusion prompt. Include specific details about lighting, atmosphere, camera angle, lens type, and textures. Return only the prompt text, no explanation or commentary.",
+      "url": "http://127.0.0.1:11434",
+      "model": "impactframes/llama3_ifai_sd_prompt_mkr_q4km",
+      "debug": false,
+      "seed": 0,
+      "top_k": 40,
+      "top_p": 0.9,
+      "temperature": 0.8,
+      "num_predict": 256,
+      "tfs_z": 1,
+      "keep_alive": 5,
+      "keep_context": false,
+      "format": "text",
+      "filter_thinking": true
+    }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "juggernautXL_ragnarok.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": ["1", 0],
+      "clip": ["2", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "cartoon, anime, painting, illustration, blurry, low quality, bad anatomy, deformed hands, watermark, text, signature, oversaturated, cropped",
+      "clip": ["2", 1]
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["2", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "photorealistic"
+    }
+  }
+}
